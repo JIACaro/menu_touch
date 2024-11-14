@@ -14,12 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.check-button').forEach(button => {
         button.addEventListener('click', function() {
-            const orderId = this.getAttribute('data-order-id'); 
+            const orderId = this.getAttribute('data-order-id');
             console.log("Order ID:", orderId);
             console.log("CSRF Token:", getCSRFToken());
 
             fetch(`http://127.0.0.1:8000/cocina/cambiar-estado-pedido/${orderId}/`, {
-
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCSRFToken(),
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .then(response => {
-                // Verifica si la respuesta es HTML en lugar de JSON
                 if (response.headers.get("content-type") && response.headers.get("content-type").includes("text/html")) {
                     return response.text().then(html => {
                         console.error("Unexpected HTML response:", html);
@@ -41,14 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.success) {
-                    const orderCard = document.getElementById('order-card-' + orderId);
-                    if (orderCard) {
-                        orderCard.style.transition = "opacity 0.5s";
-                        orderCard.style.opacity = 0;
-                        setTimeout(() => {
-                            orderCard.remove();
-                        }, 500);
-                    }
+                    // Recargar la página automáticamente
+                    location.reload();
                 } else {
                     console.error('Error:', data.error);
                 }

@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto, Pedido, PedidoProducto, PerfilUsuario
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from django.db.models import F
 import json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -28,13 +27,13 @@ def mesa_login(request):
             if perfil:
                 # Redirigir según el rol del usuario
                 if perfil.rol == 'admin':
-                    return redirect('administrativo_dashboard')  # Cambia al nombre de tu vista para administrativo
+                    return redirect('administrativo_dashboard')
                 elif perfil.rol == 'garzon':
-                    return redirect('garzon_gestion_pedidos')  # Cambia al nombre de tu vista para garzón
+                    return redirect('garzon_gestion_pedidos')  
                 elif perfil.rol == 'mesa':
-                    return redirect('home')  # Cambia al nombre de la vista para mesas
+                    return redirect('home')  
                 elif perfil.rol == 'cocina':
-                    return redirect('vista_cocina')  # Cambia al nombre de la vista para cocina
+                    return redirect('vista_cocina')  
 
             # Si no tiene un rol definido, redirigir a una página predeterminada
             return redirect('home')
@@ -43,6 +42,7 @@ def mesa_login(request):
             return render(request, 'login.html', {'error': 'Credenciales incorrectas.'})
 
     return render(request, 'login.html')
+
 
 # CATEGORIAS
 def categorias(request):
