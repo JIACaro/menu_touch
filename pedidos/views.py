@@ -29,7 +29,7 @@ def mesa_login(request):
                 if perfil.rol == 'admin':
                     return redirect('administrativo_dashboard')
                 elif perfil.rol == 'garzon':
-                    return redirect('garzon_gestion_pedidos')  
+                    return redirect('gestion_pedidos')  
                 elif perfil.rol == 'mesa':
                     return redirect('home')  
                 elif perfil.rol == 'cocina':
@@ -121,8 +121,8 @@ def logout_view(request):
 
 # CARRITO
 def carrito(request):
-    # Aquí puedes manejar los items del carrito
     return render(request, 'carrito.html')
+
 
 # AGREGAR AL CARRITO
 def agregar_al_carrito(request, producto_id):
@@ -196,3 +196,15 @@ def _actualizar_respuesta_carrito(pedido):
         "total": total,
         "carrito_count": productos_en_carrito.count()
     })
+
+#FINALIZAR PEDIDO 
+def finalizar_pedido(request):
+    if request.method == 'POST':
+        user = request.user
+        pedido = Pedido.objects.filter(mesa=user, estado='PREP').first()
+        if pedido:
+            pedido.estado = 'PAGAR'
+            pedido.save()
+            return JsonResponse({'mensaje': 'El pedido está listo para ser pagado. El garzón ha sido notificado.'})
+        return JsonResponse({'error': 'No hay pedidos activos.'}, status=400)
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)

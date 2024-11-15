@@ -1,26 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Carrito de Compras</h1>
-<table>
-    <tr>
-        <th>Producto</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
-        <th>Subtotal</th>
-        <th>Acciones</th>
-    </tr>
-    {% for item in productos_en_carrito %}
-    <tr>
-        <td>{{ item.producto.nombre }}</td>
-        <td>${{ item.producto.precio }}</td>
-        <td>{{ item.cantidad }}</td>
-        <td>${{ item.subtotal }}</td>
-        <td>
-            <a href="{% url 'eliminar_del_carrito' item.producto.id %}">Eliminar</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<h3>Total: ${{ pedido.total }}</h3>
-<a href="{% url 'finalizar_pedido' %}">Finalizar Pedido</a>
+<div class="container mt-5">
+    <h1 class="text-center">Carrito de Compras</h1>
+    
+    <!-- Contenedor para mostrar los detalles del carrito -->
+    <div id="detalles-carrito" class="mt-4 border rounded p-3 bg-light">
+        <p class="text-center">Cargando productos...</p>
+    </div>
+    
+    <!-- Botón para agregar más productos -->
+    <div class="text-center mt-4">
+        <a href="{% url 'menu' %}" class="btn btn-primary">Agregar más productos</a>
+    </div>
+
+    <!-- Botón para finalizar el pedido -->
+    <div class="text-center mt-4">
+        <button id="finalizar-btn" class="btn btn-success" onclick="borrarHistorial()">Finalizar y Pagar</button>
+    </div>
+</div>
 {% endblock %}

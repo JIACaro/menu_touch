@@ -131,13 +131,10 @@ function agregarPedido() {
     .then(data => {
         console.log("Respuesta del servidor:", data);
         if (data.mensaje) {
-            alert(data.mensaje);  // Muestra mensaje de éxito
-            moverPedidoAlHistorial(carritoItems);  // Mover el pedido al historial
-            carrito = {};  // Vaciar el carrito actual
-            actualizarCarrito();  // Refrescar la vista del carrito
-            guardarCarritoEnLocalStorage();
+            alert(data.mensaje); // Muestra mensaje de éxito
+            window.location.href = '/carrito/'; // Redirige después del éxito
         } else if (data.error) {
-            alert(data.error);
+            alert(data.error); // Muestra mensaje de error
         }
     })
     .catch(error => {
@@ -217,3 +214,38 @@ function borrarHistorial() {
 
     console.log("Historial de pedidos eliminado del Local Storage y limpiado en el DOM.");
 }
+
+
+
+
+
+// Función para mostrar los detalles del carrito cargado desde el Local Storage
+function mostrarCarrito() {
+    const detallesCarrito = document.getElementById('detalles-carrito');
+    detallesCarrito.innerHTML = '';
+    const carritoGuardado = localStorage.getItem('carrito');
+    const carrito = carritoGuardado ? JSON.parse(carritoGuardado) : {};
+
+    if (Object.keys(carrito).length === 0) {
+        detallesCarrito.innerHTML = '<p class="text-center">Tu carrito está vacío.</p>';
+        return;
+    }
+
+    let total = 0;
+    for (const id in carrito) {
+        const item = carrito[id];
+        total += item.precio * item.cantidad;
+
+        detallesCarrito.innerHTML += `
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <span>${item.nombre} (${item.cantidad})</span>
+                <span>$${(item.precio * item.cantidad).toLocaleString('es-CL')}</span>
+            </div>`;
+    }
+
+    detallesCarrito.innerHTML += `
+        <div class="text-end mt-3">
+            <strong>Total a pagar: $${total.toLocaleString('es-CL')}</strong>
+        </div>`;
+}
+
