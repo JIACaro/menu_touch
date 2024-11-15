@@ -1,58 +1,58 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Función para refrescar la vista automáticamente cada 10 segundos
-    function autoRefresh() {
-        setInterval(() => {
-            location.reload();
-        }, 10000); // Refresca cada 10 segundos
+document.addEventListener('DOMContentLoaded', function() {
+    function updateClock() {
+        const clockElement = document.getElementById('clock');
+        if (clockElement) {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const period = hours >= 12 ? 'P.M' : 'A.M';
+            clockElement.textContent = `${hours}:${minutes} ${period}`;
+        }
     }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    // Función para cambiar el estado de un pedido
-    function cambiarEstadoPedido(pedidoId) {
-        fetch(`http://127.0.0.1:8000/garzon/cambiar-estado-pedido/${pedidoId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken(),
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
+    document.querySelectorAll('.check-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            console.log("Order ID:", orderId);
+            console.log("CSRF Token:", getCSRFToken());
+
+            fetch(`http://127.0.0.1:8000/garzon/cambiar-estado-pedido/${orderId}/`, { // URL de Garzón
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.headers.get("content-type") && response.headers.get("content-type").includes("text/html")) {
+                    return response.text().then(html => {
+                        console.error("Unexpected HTML response:", html);
+                        throw new Error("Received HTML instead of JSON.");
+                    });
+                }
                 if (!response.ok) {
-                    throw new Error('Error en la respuesta de la red');
+                    throw new Error('Network response was not ok');
                 }
                 return response.json();
             })
-            .then((data) => {
+            .then(data => {
                 if (data.success) {
-                    // Recargar para reflejar los cambios
+                    // Recargar la página automáticamente
                     location.reload();
                 } else {
-                    console.error('Error al cambiar el estado del pedido:', data.error);
+                    console.error('Error:', data.error);
                 }
             })
-            .catch((error) => {
-                console.error('Error en la solicitud:', error);
+            .catch(error => {
+                console.error('Error:', error);
             });
-    }
-
-    // Función para obtener el token CSRF
-    function getCSRFToken() {
-        const cookieValue = document.cookie
-            .split('; ')
-            .find((row) => row.startsWith('csrftoken='))
-            ?.split('=')[1];
-        return cookieValue || '';
-    }
-
-    // Escuchar eventos de clic en los botones de las mesas (si los hay)
-    document.querySelectorAll('.mesa').forEach((mesa) => {
-        mesa.addEventListener('click', function () {
-            const pedidoId = this.getAttribute('data-pedido-id'); // Obtener ID del pedido de un atributo personalizado
-            if (pedidoId) {
-                cambiarEstadoPedido(pedidoId);
-            }
         });
     });
 
-    // Inicializar el auto-refresh
-    autoRefresh();
+    function getCSRFToken() {
+        const token = document.cookie.split(';').find(row => row.trim().startsWith('csrftoken='));
+        return token ? token.split('=')[1] : null;
+    }
 });
