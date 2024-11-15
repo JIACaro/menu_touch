@@ -1,15 +1,16 @@
 from django.shortcuts import render
 from pedidos.models import Pedido  # Importa el modelo Pedido desde la aplicación de pedidos
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
+from .decorators import cocina_required
 
+@cocina_required
 def vista_cocina(request):
     # Obtén los pedidos en orden de solicitud (por fecha)
     pedidos = Pedido.objects.filter(estado='PREP').order_by('fecha_pedido')
     
     return render(request, 'cocina/vista_cocina.html', {'pedidos': pedidos})
 
+@cocina_required
 def cambiar_estado_pedido(request, order_id):
     print("Iniciando el proceso para cambiar el estado del pedido...")  # Mensaje inicial
 

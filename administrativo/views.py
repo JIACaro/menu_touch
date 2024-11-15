@@ -1,16 +1,19 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from .decorators import admin_required
 from django.urls import reverse
 from pedidos.models import Producto
 from .forms import ProductoForm
+
+@admin_required
 def dashboard(request):
     return render(request, 'administrativo/dashboard.html')
 
-# Lista de productos
+@admin_required
 def lista_productos(request):
     productos = Producto.objects.all()
     return render(request, 'administrativo/lista_productos.html', {'productos': productos})
 
-# Crear producto
+@admin_required
 def crear_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -21,7 +24,7 @@ def crear_producto(request):
         form = ProductoForm()
     return render(request, 'administrativo/crear_producto.html', {'form': form})
 
-# Editar producto
+@admin_required
 def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -33,7 +36,7 @@ def editar_producto(request, pk):
         form = ProductoForm(instance=producto)
     return render(request, 'administrativo/editar_producto.html', {'form': form})
 
-# Eliminar producto
+@admin_required
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':

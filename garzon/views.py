@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from pedidos.models import Pedido, PerfilUsuario  # Importa el modelo Pedido desde la aplicación de pedidos
+from pedidos.models import Pedido, PerfilUsuario  
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
+from .decorators import garzon_required
 
+
+@garzon_required
 def gestion_pedidos(request):
     # Filtra pedidos listos para entrega
     pedidos = Pedido.objects.filter(estado='LIST').order_by('fecha_pedido')
@@ -33,7 +34,7 @@ def gestion_pedidos(request):
         'mesas_con_estados': mesas_con_estados
     })
 
-
+@garzon_required
 def cambiar_estado_pedido_garzon(request, order_id):
     print("Iniciando el proceso para cambiar el estado del pedido en Garzón...")
 

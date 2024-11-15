@@ -3,10 +3,11 @@ from .models import Producto, Pedido, PedidoProducto, PerfilUsuario
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 import json
+from .decorators import mesa_required
 from django.views.decorators.csrf import csrf_exempt
 
 # HOME
-
+@mesa_required
 def home(request):
     mesa_nombre = request.user.username if request.user.is_authenticated else "Desconocida"
     return render(request, 'home.html', {'mesa_nombre': mesa_nombre})
@@ -45,6 +46,7 @@ def mesa_login(request):
 
 
 # CATEGORIAS
+@mesa_required
 def categorias(request):
     categorias_disponibles = [
         {'nombre': 'Platos', 'imagen': '/media/platos.jpg'},
@@ -60,6 +62,7 @@ def categorias(request):
     return render(request, 'categorias.html', context)
 
 # MENU
+@mesa_required
 def menu(request):
     categoria = request.GET.get('categoria')
     if categoria:
@@ -120,11 +123,13 @@ def logout_view(request):
     return redirect('mesa_login')  # Redirigir al login después del logout
 
 # CARRITO
+@mesa_required
 def carrito(request):
     return render(request, 'carrito.html')
 
 
 # AGREGAR AL CARRITO
+@mesa_required
 def agregar_al_carrito(request, producto_id):
     if request.method == 'GET':
         producto = get_object_or_404(Producto, id=producto_id)
@@ -156,6 +161,7 @@ def agregar_al_carrito(request, producto_id):
         return JsonResponse({"error": "Método no permitido"}, status=405)
 
 # DISMINUIR CANTIDAD EN EL CARRITO
+@mesa_required
 def disminuir_cantidad(request, producto_id):
     pedido = Pedido.objects.get(mesa=request.user)
     pedido_producto = get_object_or_404(PedidoProducto, pedido=pedido, producto_id=producto_id)
@@ -198,6 +204,7 @@ def _actualizar_respuesta_carrito(pedido):
     })
 
 #FINALIZAR PEDIDO 
+@mesa_required
 def finalizar_pedido(request):
     if request.method == 'POST':
         user = request.user
