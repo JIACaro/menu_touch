@@ -50,6 +50,20 @@ class PedidoProducto(models.Model):
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre}"
 
+
+#Modelo de Boleta para seleccionar 1 o mas pedidos en garzon    
+class Boleta(models.Model):
+    fecha_emision = models.DateTimeField(auto_now_add=True)
+    pedidos = models.ManyToManyField(Pedido)  # Relación con los pedidos
+    total = models.IntegerField(default=0)  # Total de la boleta
+
+    def calcular_total(self):
+        self.total = sum(pedido.total for pedido in self.pedidos.all())
+        self.save()
+
+    def __str__(self):
+        return f"Boleta #{self.id} - Total: {self.total}"
+
 # Modelo PerfilUsuario
 class PerfilUsuario(models.Model):
     ROLES = [

@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from pedidos.models import Pedido, PerfilUsuario  
+from django.shortcuts import render, redirect
+from pedidos.models import Pedido, PerfilUsuario, Boleta 
 from django.http import JsonResponse
 from .decorators import garzon_required
 from django.shortcuts import render, get_object_or_404
@@ -78,15 +78,82 @@ def cambiar_estado_pedido_garzon(request, order_id):
 
 @garzon_required
 def mesas_pedidos(request):
+    # Traer todas las mesas que están activas (con perfil de rol "mesa")
     mesas = PerfilUsuario.objects.filter(rol='mesa')
-    return render(request, 'garzon/mesas_pedidos.html', {'mesas': mesas})
+
+    # Traer todos los pedidos asociados a esas mesas
+    pedidos_por_mesa = {}
+    for mesa in mesas:
+        pedidos = Pedido.objects.filter(mesa=mesa.usuario).exclude(estado='FIN').order_by('-fecha_pedido')
+        pedidos_por_mesa[mesa] = pedidos
+
+    return render(request, 'garzon/mesas_pedidos.html', {
+        'mesas': mesas,
+        'pedidos_por_mesa': pedidos_por_mesa
+    })
+
 
 @garzon_required
 def detalle_pedidos_mesa(request, username):
     mesa = get_object_or_404(PerfilUsuario, usuario__username=username, rol='mesa')
-    pedidos = Pedido.objects.filter(mesa=mesa.usuario).order_by('-fecha_pedido')
+
+    # Filtrar pedidos con los estados especificados
+    estados_validos = ['PREP', 'LIST', 'ENTR', 'PAGAR']
+    pedidos = Pedido.objects.filter(
+        mesa=mesa.usuario,
+        estado__in=estados_validos
+    ).order_by('-fecha_pedido')
 
     return render(request, 'garzon/detalle_pedidos_mesa.html', {
         'mesa': mesa,
         'pedidos': pedidos
     })
+
+
+@garzon_required
+def fusionar_pedidos(request):
+    if request.method == 'POST':
+        pedidos_ids = request.POST.getlist('pedidos_seleccionados')  # Obtener los pedidos seleccionados
+        pedidos = Pedido.objects.filter(id__in=pedidos_ids)
+
+        # Crear la boleta
+        boleta = Boleta()
+        boleta.save()
+        boleta.pedidos.set(pedidos)  # Asignar los pedidos a la boleta
+        boleta.calcular_total()  # Calcular el total de la boleta
+
+        # Redirigir a la vista de boleta generada
+        return redirect('boleta_generada', boleta_id=boleta.id)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@garzon_required
+def boleta_generada(request, boleta_id):
+    try:
+        boleta = Boleta.objects.get(id=boleta_id)
+        pedidos = boleta.pedidos.all()
+
+        return render(request, 'garzon/boleta_generada.html', {
+            'boleta': boleta,
+            'pedidos': pedidos
+        })
+    except Boleta.DoesNotExist:
+        return JsonResponse({"error": "Boleta no encontrada"}, status=404)
+
+
+
+@garzon_required
+def marcar_boleta_pagada(request, boleta_id):
+    try:
+        boleta = Boleta.objects.get(id=boleta_id)
+        pedidos = boleta.pedidos.all()
+
+        # Cambiar el estado de cada pedido a 'FIN'
+        for pedido in pedidos:
+            pedido.estado = 'FIN'
+            pedido.save()
+
+        # Redirigir a la página principal de garzón
+        return redirect('gestion_pedidos') 
+    except Boleta.DoesNotExist:
+        return JsonResponse({"error": "Boleta no encontrada"}, status=404)

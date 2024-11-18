@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar el reloj
     function updateClock() {
         const clockElement = document.getElementById('clock');
         if (clockElement) {
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateClock, 1000);
     updateClock();
 
+    // Manejo de botones para cambiar el estado de los pedidos
     document.querySelectorAll('.check-button').forEach(button => {
         button.addEventListener('click', function() {
             const orderId = this.getAttribute('data-order-id');
@@ -51,8 +53,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Obtener el token CSRF
     function getCSRFToken() {
         const token = document.cookie.split(';').find(row => row.trim().startsWith('csrftoken='));
         return token ? token.split('=')[1] : null;
     }
+
+    // Refrescar la página automáticamente cada 10 segundos
+    setInterval(function() {
+        console.log("Intentando refrescar la página...");
+        location.reload();
+    }, 10000);
+    
 });

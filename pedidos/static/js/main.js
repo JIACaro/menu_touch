@@ -21,8 +21,6 @@ function cerrarSesion() {
 }
 
 
-
-
 function getSessionCookie() {
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
@@ -201,8 +199,6 @@ function agregarPedido() {
 }
 
 
-
-
 function mostrarHistorialPedidos() {
     console.log("Ejecutando mostrarHistorialPedidos...");
 
@@ -247,11 +243,6 @@ function mostrarHistorialPedidos() {
     totalAcumuladoElem.textContent = `Total acumulado: $${totalAcumulado.toLocaleString("es-CL")}`;
     console.log(`Historial renderizado para la sesión ${sessionId}:`, pedidosRealizados);
 }
-
-
-
-
-
 
 
 function guardarHistorialEnLocalStorage() {
@@ -345,11 +336,6 @@ function renderizarPedidos(historialPedidos, totalAcumulado) {
 
     contenedorTotal.textContent = `Total acumulado: $${totalAcumulado.toLocaleString("es-CL")}`;
 }
-
-
-
-
-
 
 
 function inicializarCarrito() {
@@ -557,8 +543,6 @@ function limpiarCacheMesa() {
 
     console.log("Caché de la mesa limpiado.");
 }
-
-
 
 
 // ACA ESTA EL DOM
