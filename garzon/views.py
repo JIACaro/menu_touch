@@ -2,6 +2,7 @@ from django.shortcuts import render
 from pedidos.models import Pedido, PerfilUsuario  
 from django.http import JsonResponse
 from .decorators import garzon_required
+from django.shortcuts import render, get_object_or_404
 
 
 @garzon_required
@@ -73,3 +74,19 @@ def cambiar_estado_pedido_garzon(request, order_id):
     except Exception as e:
         print(f"Error desconocido: {e}")
         return JsonResponse({"error": "Error interno del servidor"}, status=500)
+    
+
+@garzon_required
+def mesas_pedidos(request):
+    mesas = PerfilUsuario.objects.filter(rol='mesa')
+    return render(request, 'garzon/mesas_pedidos.html', {'mesas': mesas})
+
+@garzon_required
+def detalle_pedidos_mesa(request, username):
+    mesa = get_object_or_404(PerfilUsuario, usuario__username=username, rol='mesa')
+    pedidos = Pedido.objects.filter(mesa=mesa.usuario).order_by('-fecha_pedido')
+
+    return render(request, 'garzon/detalle_pedidos_mesa.html', {
+        'mesa': mesa,
+        'pedidos': pedidos
+    })

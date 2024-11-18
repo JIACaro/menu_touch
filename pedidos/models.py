@@ -27,6 +27,7 @@ class Pedido(models.Model):
         ('LIST', 'Listo para entrega'),
         ('ENTR', 'Entregado'),
         ('PAGAR', 'Quieren pagar'),
+        ('FIN', 'Pagado'),
     ]
 
     mesa = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Cambiado a AUTH_USER_MODEL

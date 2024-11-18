@@ -1,21 +1,43 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container mt-5">
-    <h1 class="text-center">Carrito de Compras</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <!-- CSS y Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+    </script>
     
-    <!-- Contenedor para mostrar los detalles del carrito -->
-    <div id="detalles-carrito" class="mt-4 border rounded p-3 bg-light">
-        <p class="text-center">Cargando productos...</p>
-    </div>
-    
-    <!-- Botón para agregar más productos -->
-    <div class="text-center mt-4">
-        <a href="{% url 'menu' %}" class="btn btn-primary">Agregar más productos</a>
-    </div>
-
-    <!-- Botón para finalizar el pedido -->
-    <div class="text-center mt-4">
-        <button id="finalizar-btn" class="btn btn-success" onclick="borrarHistorial()">Finalizar y Pagar</button>
-    </div>
-</div>
-{% endblock %}
+</head>
+<body id="carrito-page" data-page="base">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">🎮 Insert Bites</a>
+            <button class="btn btn-success">
+                <a href="/categorias/" style="color: white; text-decoration: none;">Menú <i class="bi bi-cup-straw"></i></a>
+            </button>
+        </div>
+    </nav>
+    <main class="container mt-4">
+        <h1 class="text-center">Pedidos Realizados</h1>
+        <div id="pedidos-realizados" class="mt-3 border p-3 bg-light rounded">
+            <p class="text-center text-muted">Cargando pedidos...</p>
+        </div>
+        <div id="total-acumulado" class="mt-3 text-end font-weight-bold">Total acumulado: $0</div>
+        <form id="form-finalizar-pedido" method="post">
+            {% csrf_token %}
+            <button type="button" id="finalizar_pedido" onclick="finalizarPedido()">Finalizar Pedido</button>
+        </form>
+        
+    </main>
+    <footer class="footer bg-dark text-white text-center py-3">
+        <p>© 2024 Insert Bites. Todos los derechos reservados.</p>
+    </footer>
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

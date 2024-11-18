@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto, Pedido, PedidoProducto, PerfilUsuario
 from django.contrib.auth import authenticate, login, logout
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 import json
 from .decorators import mesa_required
@@ -77,6 +78,7 @@ def menu(request):
     })
 
 # AGREGAR PEDIDO
+
 @csrf_exempt
 def agregar_pedido(request):
     if request.method == 'POST':
@@ -95,7 +97,11 @@ def agregar_pedido(request):
             total_pedido = 0
 
             for item in carrito:
-                producto = Producto.objects.get(id=item['id'])
+                try:
+                    producto = Producto.objects.get(id=item['id'])
+                except Producto.DoesNotExist:
+                    return JsonResponse({'error': f'Producto con ID {item["id"]} no existe'}, status=400)
+
                 cantidad = item['cantidad']
                 subtotal = producto.precio * cantidad
                 total_pedido += subtotal
@@ -110,12 +116,14 @@ def agregar_pedido(request):
             pedido.total = total_pedido
             pedido.save()
 
-            return JsonResponse({'mensaje': 'Pedido agregado exitosamente'})
+            return JsonResponse({'mensaje': 'Pedido agregado exitosamente', 'pedido_id': pedido.id})  # Devuelve el ID
 
         except Exception as e:
             return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
 
 # LOGOUT
 def logout_view(request):
@@ -125,8 +133,23 @@ def logout_view(request):
 # CARRITO
 @mesa_required
 def carrito(request):
-    return render(request, 'carrito.html')
+    pedidos = Pedido.objects.filter(mesa=request.user).order_by('-id')
+    historial_pedidos = [
+        {
+            "nombre": item.producto.nombre,
+            "cantidad": item.cantidad,
+            "subtotal": float(item.subtotal)
+        }
+        for pedido in pedidos for item in pedido.pedidoproducto_set.all()
+    ]
+    total_acumulado = sum(item["subtotal"] for item in historial_pedidos)
 
+    context = {
+        'historial_pedidos': json.dumps(historial_pedidos, cls=DjangoJSONEncoder),
+        'total_acumulado': round(total_acumulado, 2)  # Redondea a 2 decimales
+    }
+
+    return render(request, 'carrito.html', context)
 
 # AGREGAR AL CARRITO
 @mesa_required
@@ -204,14 +227,31 @@ def _actualizar_respuesta_carrito(pedido):
     })
 
 #FINALIZAR PEDIDO 
+
+
+@csrf_exempt
 @mesa_required
 def finalizar_pedido(request):
     if request.method == 'POST':
-        user = request.user
-        pedido = Pedido.objects.filter(mesa=user, estado='PREP').first()
-        if pedido:
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            print("Datos recibidos en finalizar_pedido:", data)  # Debug log
+
+            pedido_id = data.get('pedido_id')
+            if not pedido_id:
+                return JsonResponse({'error': 'No se proporcionó un ID de pedido'}, status=400)
+
+            pedido = get_object_or_404(Pedido, id=pedido_id)
             pedido.estado = 'PAGAR'
             pedido.save()
-            return JsonResponse({'mensaje': 'El pedido está listo para ser pagado. El garzón ha sido notificado.'})
-        return JsonResponse({'error': 'No hay pedidos activos.'}, status=400)
-    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+            return JsonResponse({'mensaje': f'Pedido {pedido_id} actualizado a estado PAGAR correctamente'})
+        except Exception as e:
+            print(f"Error en finalizar_pedido: {e}")
+            return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@mesa_required
+def pagando(request):
+    # Renderizar la página de pago
+    return render(request, 'pagando.html', {})
