@@ -82,10 +82,15 @@ WSGI_APPLICATION = 'menu_touch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # Usa el backend de MySQL
+        'NAME': 'menu_touch_db',  # Nombre de la base de datos
+        'USER': 'menu_touch_user',  # Usuario de MySQL
+        'PASSWORD': 'Menunintendo1',  # Contraseña del usuario
+        'HOST': 'localhost',  # Servidor MySQL local
+        'PORT': '3306',  # Puerto de MySQL (por defecto)
     }
 }
+
 
 
 # Password validation
