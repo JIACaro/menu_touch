@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count, Sum
 from .decorators import admin_required
-from django.urls import reverse
-from pedidos.models import Producto
+from pedidos.models import Producto, Pedido, Boleta
 from .forms import ProductoForm
 
 @admin_required
@@ -43,3 +43,71 @@ def eliminar_producto(request, pk):
         producto.delete()
         return redirect('lista_productos')
     return render(request, 'administrativo/eliminar_producto.html', {'producto': producto})
+
+
+@admin_required
+def listar_pedidos_por_mesa(request):
+    """
+    Vista para listar los pedidos agrupados por mesa.
+    Muestra la cantidad total de pedidos, el monto total generado por mesa
+    y la cantidad de pedidos que tienen boletas asociadas.
+    """
+    # Filtrar solo los pedidos que están en estado 'FIN'
+    pedidos_finalizados = Pedido.objects.filter(estado='FIN').values('mesa__username')
+    
+    # Agregar la cantidad de pedidos finalizados al resultado principal
+    pedidos_agrupados = (
+        Pedido.objects.values('mesa__username')  # Agrupar por mesa (username)
+        .annotate(
+            total_pedidos=Count('id'),           # Total de pedidos por mesa
+            monto_total=Sum('total'),           # Suma del monto total generado
+        )
+        .order_by('mesa__username')             # Ordenar por mesa
+    )
+
+    # Convertir los pedidos_finalizados en un diccionario {mesa: cantidad_finalizados}
+    pedidos_finalizados_count = {
+        item['mesa__username']: item['total'] for item in pedidos_finalizados.annotate(total=Count('id'))
+    }
+
+    # Añadir la cantidad de pedidos con boleta al resultado principal
+    for item in pedidos_agrupados:
+        item['pedidos_con_boleta'] = pedidos_finalizados_count.get(item['mesa__username'], 0)
+
+    return render(
+        request,
+        'administrativo/listar_pedidos_por_mesa.html',
+        {'pedidos_agrupados': pedidos_agrupados}
+    )
+
+@admin_required
+def ver_pedidos_mesa(request, mesa_username):
+    """
+    Vista para listar los pedidos realizados por una mesa específica.
+    Incluye información de las boletas asociadas a los pedidos.
+    """
+    pedidos = Pedido.objects.filter(mesa__username=mesa_username).select_related('mesa')
+    
+    # Crear un diccionario de boletas asociadas a cada pedido
+    boletas = {
+        pedido.id: Boleta.objects.filter(pedidos=pedido).first() for pedido in pedidos
+    }
+    
+    context = {
+        'mesa_username': mesa_username,
+        'pedidos': pedidos,
+        'boletas': boletas,  # Diccionario de boletas asociadas
+    }
+    return render(request, 'administrativo/ver_pedidos_mesa.html', context)
+
+
+
+@admin_required
+def ver_boleta(request, boleta_id):
+    """
+    Vista para mostrar los detalles de una boleta específica.
+    """
+    boleta = get_object_or_404(Boleta, id=boleta_id)
+    return render(request, 'administrativo/ver_boleta.html', {'boleta': boleta})
+
+

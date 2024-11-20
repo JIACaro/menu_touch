@@ -9,4 +9,6 @@ urlpatterns = [
     path('fusionar/', views.fusionar_pedidos, name='fusionar_pedidos'),
     path('boleta/<int:boleta_id>/', views.boleta_generada, name='boleta_generada'),
     path('boleta/<int:boleta_id>/pagado/', views.marcar_boleta_pagada, name='marcar_boleta_pagada'),
+    path('eliminar-boleta/<int:boleta_id>/', views.eliminar_boleta_no_confirmada, name='eliminar_boleta_no_confirmada'),
+
 ]

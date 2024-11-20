@@ -56,3 +56,9 @@ function getCSRFToken() {
     const token = document.cookie.split(';').find(row => row.trim().startsWith('csrftoken='));
     return token ? token.split('=')[1] : null;
 }
+
+// Refrescar la página automáticamente cada 10 segundos
+setInterval(function() {
+    console.log("Intentando refrescar la página...");
+    location.reload();
+}, 5000);

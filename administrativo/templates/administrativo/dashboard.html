@@ -9,7 +9,7 @@
 </head>
 <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
     <div class="container text-center">
-        <h1 class="mb-4">Hola, soy Admin</h1>
+
         <div class="row justify-content-center">
             <!-- Botón para agregar productos -->
             <div class="col-md-4 mb-3">
@@ -31,6 +31,9 @@
                     <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                 </a>
             </div>
+
+            <a href="{% url 'listar_pedidos_por_mesa' %}">Ver Pedidos por Mesa</a>
+
         </div>
     </div>
 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boleta {{ boleta.id }}</title>
+</head>
+<body>
+    <h1>Boleta #{{ boleta.id }}</h1>
+    <p>Fecha de Emisión: {{ boleta.fecha_emision }}</p>
+    <p>Total: ${{ boleta.total }}</p>
+    <h2>Pedidos Asociados:</h2>
+    <ul>
+        {% for pedido in boleta.pedidos.all %}
+            <li>Pedido #{{ pedido.id }} - Total: ${{ pedido.total }}</li>
+        {% endfor %}
+    </ul>
+    <a href="javascript:history.back()">← Volver</a>
+</body>
+</html>

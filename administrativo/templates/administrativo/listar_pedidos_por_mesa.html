@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos por Mesa</title>
+</head>
+<body>
+    <h1>Pedidos Agrupados por Mesa</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Mesa</th>
+                <th>Total de Pedidos</th>
+                <th>Total Generado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mesa in pedidos_agrupados %}
+                <tr>
+                    <td>
+                        <a href="{% url 'ver_pedidos_mesa' mesa.mesa__username %}">
+                            {{ mesa.mesa__username }}
+                        </a>
+                    </td>
+                    <td>{{ mesa.total_pedidos }}</td>
+                    <td>${{ mesa.monto_total }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No hay pedidos registrados.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        
+        
+    </table>
+</body>
+</html>

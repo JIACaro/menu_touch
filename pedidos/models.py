@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from datetime import timedelta
+from django.utils.timezone import now
 
 # Modelo Producto
 class Producto(models.Model):
@@ -56,6 +58,7 @@ class Boleta(models.Model):
     fecha_emision = models.DateTimeField(auto_now_add=True)
     pedidos = models.ManyToManyField(Pedido)  # Relación con los pedidos
     total = models.IntegerField(default=0)  # Total de la boleta
+    confirmada = models.BooleanField(default=False)  # Nueva bandera de confirmación
 
     def calcular_total(self):
         self.total = sum(pedido.total for pedido in self.pedidos.all())
@@ -63,6 +66,11 @@ class Boleta(models.Model):
 
     def __str__(self):
         return f"Boleta #{self.id} - Total: {self.total}"
+
+    @staticmethod
+    def eliminar_no_confirmadas():
+        limite_tiempo = now() - timedelta(minutes=5)  # Ajusta el tiempo según tus necesidades
+        Boleta.objects.filter(confirmada=False, fecha_emision__lt=limite_tiempo).delete()
 
 # Modelo PerfilUsuario
 class PerfilUsuario(models.Model):

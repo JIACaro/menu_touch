@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Producto, Pedido, PedidoProducto, PerfilUsuario
+from .models import Producto, Pedido, PedidoProducto, PerfilUsuario, Boleta
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
@@ -22,3 +22,10 @@ class PerfilUsuarioAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'rol')
     list_filter = ('rol',)
     search_fields = ('usuario__username',)  # Búsqueda por nombre de usuario
+
+@admin.register(Boleta)
+class BoletaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'fecha_emision', 'total','confirmada')  # Configura los campos que quieres mostrar
+    filter_horizontal = ('pedidos',)  # Esto agrega un widget para seleccionar múltiples pedidos
+    search_fields = ('id',)
+    list_filter = ('fecha_emision',)

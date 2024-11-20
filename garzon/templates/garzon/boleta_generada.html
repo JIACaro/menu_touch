@@ -9,47 +9,82 @@
     <link rel="stylesheet" href="{% static 'css/garzon.css' %}">
 </head>
 <body>
+    <!-- boleta_generada.html -->
     <div id="boleta-container" style="color: #212529;">
         <h1 id="boleta-title" class="text-center">Boleta Generada</h1>
         <div id="boleta-card">
             <!-- Información general -->
             <h5 id="boleta-id">Boleta #{{ boleta.id }}</h5>
             <p id="boleta-info">
-                <strong>Fecha de emisión:</strong> {{ boleta.fecha_emision }}<br>
+                <strong>Fecha de emisión:</strong> {{ boleta.fecha_emision|date:"d/m/Y H:i" }}<br>
                 <strong>Total:</strong> ${{ boleta.total }}
             </p>
             <hr>
-            
+
             <!-- Detalles de pedidos -->
             <h6 id="pedidos-title">Pedidos Incluidos:</h6>
             <div id="pedidos-list">
                 {% for pedido in boleta.pedidos.all %}
-                    <div id="pedido-{{ pedido.id }}" class="pedido-detail">
+                    <div id="pedido-{{ pedido.id }}" class="pedido-detail mb-3">
                         <h6 class="pedido-title">Pedido #{{ pedido.id }}</h6>
                         <p class="pedido-mesa"><strong>Mesa:</strong> {{ pedido.mesa.username }}</p>
                         <ul class="productos-list">
                             {% for pedido_producto in pedido.pedidoproducto_set.all %}
                                 <li id="producto-{{ pedido_producto.id }}" class="producto-item">
                                     {{ pedido_producto.cantidad }} x {{ pedido_producto.producto.nombre }}
-                                    <span>${{ pedido_producto.subtotal }}</span>
+                                    <span class="float-end">${{ pedido_producto.subtotal }}</span>
                                 </li>
                             {% endfor %}
                         </ul>
-                        <p class="pedido-total">Total del pedido: ${{ pedido.total }}</p>
+                        <p class="pedido-total"><strong>Total del pedido:</strong> ${{ pedido.total }}</p>
                     </div>
+                {% empty %}
+                    <p>No hay pedidos asociados a esta boleta.</p>
                 {% endfor %}
             </div>
             <hr>
-            
+
             <!-- Acciones -->
             <div id="boleta-actions">
                 <form method="POST" action="{% url 'marcar_boleta_pagada' boleta.id %}">
                     {% csrf_token %}
-                    <button id="btn-pagada" type="submit">Marcar como Pagada</button>
+                    <button id="btn-pagada" type="submit" class="btn btn-success">Marcar como Pagada</button>
                 </form>
             </div>
         </div>
     </div>
+
+
+    <!-- Script para eliminar boleta no confirmada -->
+    <script>
+        function eliminarBoleta() {
+            fetch("{% url 'eliminar_boleta_no_confirmada' boleta.id %}", {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Boleta eliminada correctamente.");
+                    window.location.href = "{% url 'gestion_pedidos' %}";
+                } else {
+                    alert("Error al eliminar la boleta.");
+                }
+            }).catch(error => {
+                console.error("Error al eliminar la boleta:", error);
+            });
+        }
+
+        window.addEventListener('beforeunload', function () {
+            fetch("{% url 'eliminar_boleta_no_confirmada' boleta.id %}", {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            });
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+</body>
 </html>
