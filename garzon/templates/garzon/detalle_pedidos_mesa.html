@@ -1,41 +1,62 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedidos de Mesa {{ mesa.usuario.username }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/garzon.css' %}">
 </head>
 <body>
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Pedidos - Mesa {{ mesa.usuario.username }}</h1>
+<div id="detalle-pedidos-container" class="container mt-4">
+    <!-- Título -->
+    <h1 id="titulo-detalle-pedidos" class="text-center mb-4">
+        Pedidos - Mesa {{ mesa.usuario.username|slice:"4:" }}
+    </h1>
+    
     {% if pedidos %}
         <form method="POST" action="{% url 'fusionar_pedidos' %}">
             {% csrf_token %}
-            <ul class="list-group">
+            <!-- Lista de pedidos -->
+            <ul id="pedidos-lista" class="list-group">
                 {% for pedido in pedidos %}
-                    <li class="list-group-item">
-                        <input 
-                            type="checkbox" 
-                            name="pedidos_seleccionados" 
-                            value="{{ pedido.id }}" 
-                            id="pedido{{ pedido.id }}">
-                        <label for="pedido{{ pedido.id }}">
+                    <li class="list-group-item pedido-item">
+                        <!-- Envolver todo en un label para hacer clic en la card -->
+                        <label for="pedido{{ pedido.id }}" class="d-block w-100">
+                            <!-- Checkbox -->
+                            <input 
+                                type="checkbox" 
+                                name="pedidos_seleccionados" 
+                                value="{{ pedido.id }}" 
+                                id="pedido{{ pedido.id }}" 
+                                class="me-2">
                             Pedido #{{ pedido.id }} - Total: ${{ pedido.total }} - 
                             <strong>Estado:</strong> <strong>{{ pedido.get_estado_display }}</strong>
+                            <!-- Productos del pedido -->
+                            <ul class="productos-lista mt-2">
+                                {% for pedido_producto in pedido.pedidoproducto_set.all %}
+                                    <li class="producto-item">
+                                        {{ pedido_producto.producto.nombre }} 
+                                        (x{{ pedido_producto.cantidad }}) - ${{ pedido_producto.subtotal }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </label>
-                        <ul>
-                            {% for pedido_producto in pedido.pedidoproducto_set.all %}
-                                <li>{{ pedido_producto.producto.nombre }} (x{{ pedido_producto.cantidad }}) - ${{ pedido_producto.subtotal }}</li>
-                            {% endfor %}
-                        </ul>
                     </li>
                 {% endfor %}
             </ul>
-            <button type="submit" class="btn btn-primary mt-3">Fusionar Pedidos</button>
+            <!-- Botón para fusionar -->
+            <div class="text-end mt-3">
+                <button type="submit" id="fusionar-pedidos-btn" class="btn btn-primary">
+                    Fusionar Pedidos
+                </button>
+            </div>
         </form>
     {% else %}
-        <p>No hay pedidos activos para esta mesa.</p>
+        <p id="sin-pedidos-texto" class="text-center">
+            No hay pedidos activos para esta mesa.
+        </p>
     {% endif %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

@@ -6,21 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesas y Pedidos</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/garzon.css' %}">
 </head>
 <body>
 
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Mesas</h1>
-    <div class="row">
-        {% for mesa in mesas %}
-            <div class="col-md-3 mb-3">
-                <a href="{% url 'detalle_pedidos_mesa' mesa.usuario.username %}" class="btn btn-outline-primary w-100">
-                    Mesa {{ mesa.usuario.username }}
-                </a>
-            </div>
-        {% endfor %}
+    <div id="mesas-container" class="container mt-4">
+        <div class="d-flex align-items-center mb-4">
+            <!-- Botón para regresar -->
+            <a href="http://127.0.0.1:8000/garzon/" class="btn btn-secondary me-3">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </a>
+            <!-- Título centrado -->
+            <h1 id="titulo-mesas" class="flex-grow-1 text-center m-0">Mesas</h1>
+        </div>
+        <div id="mesas-grid" class="row">
+            {% for mesa in mesas %}
+                <div class="col-md-3 mb-3">
+                    <a href="{% url 'detalle_pedidos_mesa' mesa.usuario.username %}" class="mesa-card btn btn-outline-primary w-100">
+                        Mesa {{ mesa.usuario.username|slice:"4:" }}
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
+    
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

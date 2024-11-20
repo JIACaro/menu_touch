@@ -1,33 +1,55 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boleta Generada</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/garzon.css' %}">
 </head>
 <body>
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Boleta Generada</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Boleta #{{ boleta.id }}</h5>
-            <p class="card-text">Fecha: {{ boleta.fecha_emision }}</p>
-            <p class="card-text">Total: ${{ boleta.total }}</p>
+    <div id="boleta-container" style="color: #212529;">
+        <h1 id="boleta-title" class="text-center">Boleta Generada</h1>
+        <div id="boleta-card">
+            <!-- Información general -->
+            <h5 id="boleta-id">Boleta #{{ boleta.id }}</h5>
+            <p id="boleta-info">
+                <strong>Fecha de emisión:</strong> {{ boleta.fecha_emision }}<br>
+                <strong>Total:</strong> ${{ boleta.total }}
+            </p>
             <hr>
-            <h6>Pedidos:</h6>
-            <ul>
-                {% for pedido in pedidos %}
-                    <li>Pedido #{{ pedido.id }} - Mesa: {{ pedido.mesa.username }} - Total: ${{ pedido.total }}</li>
+            
+            <!-- Detalles de pedidos -->
+            <h6 id="pedidos-title">Pedidos Incluidos:</h6>
+            <div id="pedidos-list">
+                {% for pedido in boleta.pedidos.all %}
+                    <div id="pedido-{{ pedido.id }}" class="pedido-detail">
+                        <h6 class="pedido-title">Pedido #{{ pedido.id }}</h6>
+                        <p class="pedido-mesa"><strong>Mesa:</strong> {{ pedido.mesa.username }}</p>
+                        <ul class="productos-list">
+                            {% for pedido_producto in pedido.pedidoproducto_set.all %}
+                                <li id="producto-{{ pedido_producto.id }}" class="producto-item">
+                                    {{ pedido_producto.cantidad }} x {{ pedido_producto.producto.nombre }}
+                                    <span>${{ pedido_producto.subtotal }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <p class="pedido-total">Total del pedido: ${{ pedido.total }}</p>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
             <hr>
-            <!-- Botón para marcar la boleta como pagada -->
-            <form method="POST" action="{% url 'marcar_boleta_pagada' boleta.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success">Pagado</button>
-            </form>
+            
+            <!-- Acciones -->
+            <div id="boleta-actions">
+                <form method="POST" action="{% url 'marcar_boleta_pagada' boleta.id %}">
+                    {% csrf_token %}
+                    <button id="btn-pagada" type="submit">Marcar como Pagada</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

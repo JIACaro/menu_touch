@@ -18,16 +18,16 @@
         <h1 class="text-center">Pedidos Listos para Entregar</h1>
         <div>
             <!-- Botón para ir a la página de mesas -->
-            <a href="{% url 'mesas_pedidos' %}" class="btn btn-primary me-2">
+            <a id="ver-mesas" href="{% url 'mesas_pedidos' %}" class="btn">
                 <i class="bi bi-table me-1"></i> Ver Mesas
             </a>
             <!-- Botón para cerrar sesión -->
-            <a href="{% url 'logout' %}" class="btn btn-danger">
+            <a id="cerrar-sesion" href="{% url 'logout' %}" class="btn">
                 <i class="bi bi-box-arrow-right me-1"></i> Cerrar Sesión
             </a>
         </div>
     </div>
-
+    
     <div class="row g-4">
         {% for pedido in pedidos %}
             <div class="col-md-3">
@@ -50,24 +50,24 @@
         {% endfor %}
     </div>
 
-    <div class="mesas mt-5">
+    <div class="mesas">
         <h2 class="text-center mb-4">Estado de Mesas</h2>
         <div class="d-flex justify-content-center flex-wrap">
             {% for mesa in mesas_con_estados %}
             <div class="mesa-card mx-2 my-2 text-center" style="width: 80px; height: 80px; 
                 background-color: 
-                    {% if mesa.estado == 'PAGAR' %} yellow 
-                    {% elif mesa.estado == 'LIST' %} green 
-                    {% elif mesa.estado == 'PREP' %} blue 
-                    {% else %} red {% endif %};">
+                    {% if mesa.estado == 'PAGAR' %} #FFA500 
+                    {% elif mesa.estado == 'LIST' %} #32CD32 
+                    {% elif mesa.estado == 'PREP' %} #5bc0de 
+                    {% else %} #adb5bd {% endif %};">
                 {{ mesa.username }}
             </div>
             {% endfor %}
         </div>
     </div>
     
-
     <div class="clock" id="clock">13:00 P.M</div>
+    
 
 </div>
 
