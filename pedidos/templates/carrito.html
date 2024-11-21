@@ -11,7 +11,6 @@
     <script>
         const csrfToken = "{{ csrf_token }}";
     </script>
-    
 </head>
 <body id="carrito-page" data-page="base">
     <nav class="navbar navbar-dark bg-dark">
@@ -23,20 +22,36 @@
         </div>
     </nav>
     <main class="container mt-4">
+        <!-- Título principal -->
         <h1 class="text-center">Pedidos Realizados</h1>
+        <!-- Subtítulo para el número de la mesa -->
+        <h2 class="text-center text-muted">Mesa #{{ mesa_numero }}</h2>
+
+        <!-- Pedidos realizados -->
         <div id="pedidos-realizados" class="mt-3 border p-3 bg-light rounded">
             <p class="text-center text-muted">Cargando pedidos...</p>
         </div>
+        
+        <!-- Total acumulado -->
         <div id="total-acumulado" class="mt-3 text-end font-weight-bold">Total acumulado: $0</div>
+        
+        <!-- Botón Finalizar Pedido -->
         <form id="form-finalizar-pedido" method="post">
             {% csrf_token %}
-            <button type="button" id="finalizar_pedido" onclick="finalizarPedido()">Finalizar Pedido</button>
+            <button type="button" id="finalizar_pedido" onclick="finalizarPedido()" class="btn btn-primary w-100 mt-3">Finalizar Pedido</button>
         </form>
         
+        <!-- Botón Comprar Más -->
+        <div class="text-center mt-4">
+            <a href="/categorias/" class="btn btn-secondary">Comprar más</a>
+        </div>
     </main>
+
+    <!-- Footer -->
     <footer class="footer bg-dark text-white text-center py-3">
         <p>© 2024 Insert Bites. Todos los derechos reservados.</p>
     </footer>
+
     <!-- Scripts -->
     <script src="/static/js/main.js"></script>
 </body>

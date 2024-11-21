@@ -4,36 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedidos por Mesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Encabezado */
+        h1 {
+            color: #6f42c1 !important; /* Morado principal */
+        }
+
+        /* Botón de volver */
+        .btn-secondary {
+            background-color: #6f42c1;
+            border: none;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a379f;
+            color: white;
+        }
+
+        /* Botón "Ver Mesa" */
+        .btn-primary {
+            background-color: #6f42c1;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a379f;
+        }
+
+        /* Tablas */
+        .table {
+            border: 2px solid #6f42c1; /* Borde morado */
+        }
+
+        .table thead {
+            background-color: #e9d8fd; /* Morado pastel */
+            color: #6f42c1; /* Texto morado principal */
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa; /* Fondo claro al pasar el mouse */
+        }
+
+        /* Mensajes vacíos */
+        .text-muted {
+            color: #6c757d !important;
+        }
+    </style>
 </head>
-<body>
-    <h1>Pedidos Agrupados por Mesa</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Mesa</th>
-                <th>Total de Pedidos</th>
-                <th>Total Generado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for mesa in pedidos_agrupados %}
+<body class="bg-light">
+    <div class="container mt-5">
+        {% load humanize %}
+        <h1 class="text-center mb-4">Pedidos Agrupados por Mesa</h1>
+
+        <!-- Botón de volver -->
+        <a href="{% url 'administrativo_dashboard' %}" class="btn btn-secondary">← Volver al Dashboard</a>
+
+        <!-- Tabla de pedidos agrupados por mesa -->
+        <table class="table table-bordered table-hover shadow-sm">
+            <thead>
                 <tr>
+                    <th>Mesa</th>
+                    <th>Total de Pedidos</th>
+                    <th>Total Generado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mesa in pedidos_agrupados %}
+                <tr>
+                    <td>{{ mesa.mesa__username }}</td>
+                    <td>{{ mesa.total_pedidos }}</td>
+                    <td>${{ mesa.monto_total|intcomma }}</td>
                     <td>
-                        <a href="{% url 'ver_pedidos_mesa' mesa.mesa__username %}">
-                            {{ mesa.mesa__username }}
+                        <!-- Botón Ver Mesa -->
+                        <a href="{% url 'ver_pedidos_mesa' mesa.mesa__username %}" class="btn btn-primary btn-sm">
+                            Ver Mesa
                         </a>
                     </td>
-                    <td>{{ mesa.total_pedidos }}</td>
-                    <td>${{ mesa.monto_total }}</td>
                 </tr>
-            {% empty %}
+                {% empty %}
                 <tr>
-                    <td colspan="3">No hay pedidos registrados.</td>
+                    <td colspan="4" class="text-center text-muted">No hay pedidos registrados.</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-        
-        
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Tabla de pedidos agrupados por día -->
+        <h2 class="text-center mt-5 mb-4">Pedidos Agrupados por Día</h2>
+        <table class="table table-bordered table-hover shadow-sm">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Total de Pedidos</th>
+                    <th>Total Generado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dia in pedidos_por_dia %}
+                <tr>
+                    <td>{{ dia.fecha }}</td>
+                    <td>{{ dia.total_pedidos }}</td>
+                    <td>${{ dia.monto_total|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No hay pedidos registrados por día.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

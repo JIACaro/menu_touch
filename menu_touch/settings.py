@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'cocina',
     'administrativo', 
     'garzon',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
