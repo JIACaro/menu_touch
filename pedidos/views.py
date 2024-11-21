@@ -144,9 +144,13 @@ def carrito(request):
     ]
     total_acumulado = sum(item["subtotal"] for item in historial_pedidos)
 
+    # Extrae el número de la mesa
+    mesa_numero = request.user.username.replace("mesa", "")  # Elimina "mesa" y deja solo el número
+
     context = {
         'historial_pedidos': json.dumps(historial_pedidos, cls=DjangoJSONEncoder),
-        'total_acumulado': round(total_acumulado, 2)  # Redondea a 2 decimales
+        'total_acumulado': round(total_acumulado, 2),  # Redondea a 2 decimales
+        'mesa_numero': mesa_numero,  # Pasa solo el número al contexto
     }
 
     return render(request, 'carrito.html', context)

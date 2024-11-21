@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Procesando el Pago</h1>
-    <p style="font-size: 1.2rem; color: #555; margin-bottom: 2rem;">Tu pedido está siendo procesado. Por favor, espera...</p>
-    <a href="http://127.0.0.1:8000/" style="padding: 0.8rem 1.5rem; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 1rem;">Ir al inicio</a>
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; padding: 20px;">
+    <!-- GIF animado -->
+    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2pydTNiMjBvYXNvc2xuMDhic2RvZGEwejZvMzJqZjh1dm4zbXZ5NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yBzRyo9EycRFseOw8Y/giphy.gif" alt="Gracias por tu visita" style="width: 200px; height: auto; margin-bottom: 20px;">
+
+    <!-- Mensaje de agradecimiento -->
+    <h1 style="font-size: 2.5rem; color: #6c63ff; margin-bottom: 1rem;">¡Gracias por visitarnos!</h1>
+    
+    <!-- Mensaje principal -->
+    <p style="font-size: 1.5rem; color: #E0E0E0; margin-bottom: 1rem;">
+        Por favor, espera unos momentos mientras nuestro garzón llega para finalizar tu pago.<br>
+        ¡Esperamos que hayas disfrutado tu comida!
+    </p>
+
+    <!-- Mensaje adicional -->
+    <p style="font-size: 1.2rem; color: #B0B0B0; margin-bottom: 2rem;">
+        Agradecemos tu paciencia y tu visita. ¡Fue un placer atenderte!
+    </p>
+
+    <!-- Botón para volver al inicio -->
+    <a href="/" style="padding: 1rem 2rem; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 10px; font-size: 1.2rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        Volver al inicio
+    </a>    
 </div>
 {% endblock %}

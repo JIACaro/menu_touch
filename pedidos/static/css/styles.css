@@ -157,6 +157,11 @@ h2 {
     margin: 10px 0;
     max-height: 500px; /* Ajusta según tu diseño */
     overflow-y: auto; /* Agrega scroll si es necesario */
+    font-size: 1.2rem; /* Aumenta ligeramente el tamaño del texto */
+    font-weight: 500; /* Ajusta el peso del texto para darle un poco más de énfasis */
+    margin-top: 10px; /* Espaciado superior */
+    padding: 10px; /* Agrega algo de espacio interno */
+
 }
 
 #carrito-page #pedidos-realizados {
@@ -181,23 +186,95 @@ h2 {
     padding: 10px 0;
 }
 
+/* Botón Finalizar Pedido */
 #finalizar_pedido {
     background-color: #6c63ff; /* Morado principal */
     color: white; /* Texto blanco */
-    font-size: 1.2rem; /* Tamaño del texto */
+    font-size: 1.5rem; /* Tamaño del texto más grande */
     font-weight: bold; /* Negrita */
-    border: none; /* Sin borde adicional */
-    border-radius: 50px; /* Bordes redondeados */
-    padding: 15px 30px; /* Espaciado interno */
-    width: 100%; /* Abarcar el ancho completo */
-    margin-top: 20px; /* Separación del contenido superior */
-    transition: all 0.3s ease-in-out; /* Efecto suave */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para resaltar */
+    border: none; /* Sin borde */
+    border-radius: 15px; /* Bordes más redondeados */
+    padding: 15px; /* Espaciado interno */
+    margin-top: 20px; /* Espaciado superior */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Transición suave */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra para resaltar */
 }
 
 #finalizar_pedido:hover {
-    background-color: #5a54e7; /* Morado más oscuro al pasar el mouse */
-    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.4); /* Sombra más profunda */
-    transform: translateY(-2px); /* Efecto de "levitación" */
-    cursor: pointer; /* Cambia a un puntero para indicar clic */
+    background-color: #5a54e7; /* Cambia a un morado más oscuro al pasar el mouse */
+    transform: scale(1.05); /* Efecto de agrandamiento */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
+/* Botón Comprar Más */
+#comprar_mas {
+    background-color: #4F91FF; /* Azul eléctrico */
+    color: white; /* Texto blanco */
+    font-size: 1.5rem; /* Tamaño del texto */
+    font-weight: bold; /* Negrita */
+    border: none; /* Sin borde */
+    border-radius: 15px; /* Bordes redondeados */
+    padding: 15px 20px; /* Espaciado interno */
+    display: flex; /* Para alinear ícono y texto */
+    align-items: center; /* Centrar ícono y texto verticalmente */
+    gap: 10px; /* Espaciado entre ícono y texto */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Transición suave */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra */
+}
+
+#comprar_mas:hover {
+    background-color: #3A7DFF; /* Azul más oscuro al pasar el mouse */
+    transform: scale(1.05); /* Efecto de agrandamiento */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
+
+/* Contenedor de los botones */
+.d-flex.justify-content-end.align-items-center {
+    display: flex; /* Activa flexbox */
+    justify-content: flex-end; /* Alinea los botones hacia la derecha */
+    align-items: center; /* Centra verticalmente los botones */
+    gap: 20px; /* Espaciado uniforme entre los botones */
+}
+
+
+.btn-flexible {
+    background-color: #6c63ff; /* Morado principal */
+    color: white; /* Texto blanco */
+    font-size: 1.5rem; /* Tamaño del texto */
+    font-weight: bold; /* Negrita */
+    border: none; /* Sin borde */
+    border-radius: 15px; /* Bordes redondeados */
+    padding: 15px 20px; /* Espaciado interno */
+    display: flex; /* Alineación interna */
+    align-items: center; /* Centra ícono y texto */
+    justify-content: center; /* Centra el contenido */
+    gap: 10px; /* Espaciado entre ícono y texto */
+    transition: transform 0.2s ease, background-color 0.3s ease; /* Transición suave */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra */
+}
+
+.btn-flexible:hover {
+    background-color: #5a54e7; /* Morado más oscuro */
+    transform: scale(1.05); /* Efecto de agrandamiento */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
+
+/* Estilo para el total acumulado */
+#total-acumulado {
+    font-size: 1.3rem; /* Aumenta el tamaño del texto */
+    font-weight: bold; /* Negrita para mayor énfasis */
+    color: #FFFFFF; /* Texto blanco para que resalte en el fondo oscuro */
+    text-align: right; /* Alineado a la derecha */
+    margin-top: 10px; /* Espaciado superior */
+    margin-right: 20px; /* Espaciado lateral derecho */
+}
+
+
+h3.text-center {
+    color: #e0e0e0c9; 
+    font-weight: bold; /* Negrita */
+    font-size: 2rem; /* Aumenta el tamaño */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombreado */
 }

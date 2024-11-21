@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return token ? token.split('=')[1] : null;
     }
 
-    // Refrescar la página automáticamente cada 10 segundos
+    // Refrescar la página automáticamente cada 5 segundos
     setInterval(function() {
         console.log("Intentando refrescar la página...");
         location.reload();
-    }, 10000);
+    }, 5000);
     
 });
