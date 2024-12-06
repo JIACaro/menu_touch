@@ -183,45 +183,39 @@ def boleta_generada(request, boleta_id):
 @garzon_required
 def marcar_boleta_pagada(request, boleta_id):
     try:
-        # Recuperar la boleta y los pedidos asociados
-        boleta = Boleta.objects.prefetch_related('pedidos').get(id=boleta_id)
+        with transaction.atomic():
+            boleta = Boleta.objects.prefetch_related('pedidos').get(id=boleta_id)
+            pedidos_ids = list(boleta.pedidos.values_list('id', flat=True))
+            if not pedidos_ids:
+                messages.error(request, "No hay pedidos asociados a esta boleta.")
+                return redirect('boleta_generada', boleta_id=boleta_id)
 
-        # Registrar los IDs de los pedidos asociados
-        pedidos_ids = list(boleta.pedidos.values_list('id', flat=True))
+            pedidos = Pedido.objects.filter(id__in=pedidos_ids)
+            if not pedidos.exists():
+                messages.error(request, "No se encontraron pedidos para actualizar.")
+                return redirect('boleta_generada', boleta_id=boleta_id)
 
-        # Verificar que la boleta tiene pedidos asociados
-        if not pedidos_ids:
-            messages.error(request, "No hay pedidos asociados a esta boleta.")
-            return redirect('boleta_generada', boleta_id=boleta_id)
+            for pedido in pedidos:
+                print(f"Estado actual de Pedido #{pedido.id}: {pedido.estado}")
+                pedido.estado = 'FIN'
+                pedido.save()
+                print(f"Estado tras guardar Pedido #{pedido.id}: {pedido.estado}")
 
-        # Cambiar el estado de los pedidos a 'FIN'
-        pedidos = Pedido.objects.filter(id__in=pedidos_ids)
-        for pedido in pedidos:
-            pedido.estado = 'FIN'
-            pedido.save()
+            boleta.confirmada = True
+            boleta.save()
 
-        # Confirmar la boleta sin modificar la relación ManyToMany
-        boleta.confirmada = True
-        boleta.save()
-
-        # Reafirmar la relación ManyToMany si es necesario
-        boleta.pedidos.add(*pedidos)
-
-        # Depuración: Verificar pedidos después de guardar
-        print(f"Pedidos asociados después de marcar como pagada: {[pedido.id for pedido in boleta.pedidos.all()]}")
-
-        # Mensaje de éxito y redirección
-        messages.success(request, f"La boleta #{boleta.id} se ha marcado como pagada correctamente.")
-        return redirect('gestion_pedidos')
+            messages.success(request, f"La boleta #{boleta.id} se ha marcado como pagada correctamente.")
+            return redirect('gestion_pedidos')
 
     except Boleta.DoesNotExist:
         messages.error(request, "La boleta no existe.")
         return redirect('gestion_pedidos')
 
     except Exception as e:
+        print(f"Error al procesar la boleta #{boleta_id}: {str(e)}")
         messages.error(request, f"Error al procesar la boleta: {e}")
         return redirect('gestion_pedidos')
-
+    
 @garzon_required
 def eliminar_boleta_no_confirmada(request, boleta_id):
     if request.method == "POST":
